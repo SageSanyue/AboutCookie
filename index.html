@@ -7,9 +7,17 @@
 </head>
 <body>
   <h5>您的账户余额为<span id="amount">&&&amount&&&</span></h5>
-  <form action="/pay" method="post">
-    <input type="submit" value="付款">
-  </form>
-  <script src="./main.js"></script>
+  <button id="button">付款￥1</button>
+  <scrip></script>
+  <script>
+    button.addEventListener('click',(e)=>{
+     let script = document.createElement('script')
+     script.src = '/pay'
+     document.body.appendChild(script)
+     script.onerror = function(){
+       alert('fail')
+     } 
+    })
+  </script>
 </body>
 </html>
