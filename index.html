@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>关于node服务器</title>
+  <title>前后端通信</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <h5>点击购买</h5>
+  <h5>您的账户余额为<span id="amount">&&&amount&&&</span></h5>
+  <form action="/pay" method="post">
+    <input type="submit" value="付款">
+  </form>
   <script src="./main.js"></script>
 </body>
 </html>
