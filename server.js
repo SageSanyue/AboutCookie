@@ -42,7 +42,7 @@ if(path === '/'){
   fs.writeFileSync('./db',newAmount)
   response.setHeader('Content-Type','application/javascript')
   response.statusCode = 200
-  response.write(`amount.innerText = amount.innerText - 1`)
+  response.write(`${query.callback}(undefined,'success')`)
   response.end()
 
 }else{
