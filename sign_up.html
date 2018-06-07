@@ -28,6 +28,7 @@
             border: 1px solid #aaa;
             border-radius: 6px;
             padding: 20px;
+            width: 390px;
         }
         .form-wrapper h1{
             text-align: center;
@@ -48,14 +49,17 @@
             <div class="row">
                 <label for="">邮箱</label>
                 <input type="text" name="email">
+                <span class="error"></span>
             </div>
             <div class="row">
                 <label for="">密码</label>
                 <input type="password" name="password">
+                <span class="error"></span>
             </div>
             <div class="row">
                 <label for="">确认密码</label>
                 <input type="password" name="password_confirm">
+                <span class="error"></span>
             </div>
             <div class="row">
                 <input type="submit" value="注册">
@@ -64,22 +68,51 @@
     </div>
     <script src="https://cdn.bootcss.com/jquery/1.7.2/jquery.min.js"></script>
     <script>
-            let hash = {}
-            $('#signUpForm').on('submit',(e)=>{
+            let $form = $('#signUpForm')
+            $form.on('submit',(e)=>{
+                let hash = {}
                 e.preventDefault()
                 let need = ['email','password','password_confirm']
                 need.forEach((name)=>{
-                    let value = $('#signUpForm').find(`[name=${name}]`).val()
+                    let value = $form.find(`[name=${name}]`).val()
                     hash[name] = value
                 })
-                console.log(hash)
-            })
-            $.post('/sign_up',hash).then((response)=>{
+                $form.find('.error').each((index,span)=>{
+                    $(span).text('')
+                })
+                if(hash['email']===''){
+                    $form.find('[name="email"]').siblings('.error').text('请填邮箱')
+                    return
+                }
+                if(hash['password']===''){
+                    $form.find('[name="password"]').siblings('.error').text('请设置密码')
+                    return
+                }
+                if(hash['password_confirm']===''){
+                    $form.find('[name="password_confirm"]').siblings('.error').text('请再次填写密码')
+                    return
+                }
+                if(hash['password_confirm']!==hash['password']){
+                    $form.find('[name="password_confirm"]').siblings('.error').text('两次密码不一致')
+                    return
+                }
+                $.post('/sign_up',hash).then((response)=>{
                   console.log('success')
-                  console.log(response)
-              },()=>{
-                  console.log('error')
-              })
+                },(request)=>{
+                  let object = JSON.parse(request.responseText)
+                  let errors = object.errors
+                  let hint = object.hint
+                  
+                  //let {errors} = request.responseJSON
+                  if(errors.email && errors.email === 'invalid'){
+                    $form.find('[name="email"]').siblings('.error').text('邮箱格式错误')
+                  }
+                  if(hint['account'] && hint['account'] === 'exist'){
+                    console.log('已注册')
+                    $form.find('[name="email"]').siblings('.error').text('该邮箱已注册')
+                  }
+                })
+            })
     </script>
 </body>
 </html>
