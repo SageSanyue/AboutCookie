@@ -8,6 +8,8 @@ if(!port){
   process.exit(1)
 }
 
+let sessions = {}
+
 var server = http.createServer(function(request, response){
   var parsedUrl = url.parse(request.url, true)
   var pathWithQuery = request.url 
@@ -28,9 +30,12 @@ if(path === '/'){
   }
   console.log('request.headers.cookie')
   console.log(request.headers.cookie)*/
-  let cookies = request.headers.cookie.split(',')  //['xsj@qq.com','boe.qq.com','562441461@qq.com']
-  console.log('cookies')
-  console.log(cookies)
+  //如果cookies起先是空字符串则下句报错，没有.split()方法
+  //let cookies = request.headers.cookie.split(',')  //['xsj@qq.com','boe.qq.com','562441461@qq.com']
+  let cookies = ''
+  if(request.headers.cookie){
+    cookies = request.headers.cookie.split(',')
+  }
   let hash = {}
   for(let i = 0;i < cookies.length;i ++){
     let parts = cookies[i].split('=')
@@ -38,9 +43,13 @@ if(path === '/'){
     let value = parts[1]
     hash[key] = value
   }
-  //console.log('hash')
-  //console.log(hash)
-  let email = hash.sign_in_email
+  let mySession = sessions[hash.sessionId]
+  let email
+  if(mySession){
+    email = mySession.sign_in_email
+  }
+  //let email = sessions[hash.sessionId].sign_in_email
+  //let email = hash.sign_in_email
   let users = fs.readFileSync('./db/users','utf-8')
   users = JSON.parse(users)
   
@@ -173,7 +182,10 @@ if(path === '/'){
       }
     }
     if(found){
-      response.setHeader('Set-Cookie',`sign_in_email=${email}`)
+      let sessionId = Math.random()*100000
+      sessions[sessionId] = {sign_in_email: email}
+      //response.setHeader('Set-Cookie',`sign_in_email=${email}`)  //为了避免用户篡改cookie试用他人Email账号
+      response.setHeader('Set-Cookie',`sessionId=${sessionId}`)
       response.statusCode = 200
     }else{
       response.statusCode = 401   //Unauthorized
