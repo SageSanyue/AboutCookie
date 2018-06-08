@@ -28,7 +28,9 @@ if(path === '/'){
   }
   console.log('request.headers.cookie')
   console.log(request.headers.cookie)*/
-  let cookies = request.headers.cookie.split(';')  //['xsj@qq.com','boe.qq.com','562441461@qq.com']
+  let cookies = request.headers.cookie.split(',')  //['xsj@qq.com','boe.qq.com','562441461@qq.com']
+  console.log('cookies')
+  console.log(cookies)
   let hash = {}
   for(let i = 0;i < cookies.length;i ++){
     let parts = cookies[i].split('=')
@@ -41,6 +43,7 @@ if(path === '/'){
   let email = hash.sign_in_email
   let users = fs.readFileSync('./db/users','utf-8')
   users = JSON.parse(users)
+  
   let foundUser
   for(let i=0;i<users.length;i++){
     if(users[i].email === email){
@@ -150,10 +153,10 @@ if(path === '/'){
       hash[key] = decodeURIComponent(value)
     })
     let {email,password} = hash
-    console.log('email')
+    /*console.log('email')
     console.log(email)
     console.log('password')
-    console.log(password)
+    console.log(password)*/
 
     var users = fs.readFileSync('./db/users','utf-8')
     try{
